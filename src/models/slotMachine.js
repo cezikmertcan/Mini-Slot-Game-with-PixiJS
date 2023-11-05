@@ -2,8 +2,9 @@ import Arm from "./arm.js";
 import Slot from "./slot.js";
 
 class SlotMachine {
-    constructor(assets) {
-        this.assets = assets;
+    constructor(game) {
+        this.game = game;
+        this.assets = game.assets;
         this.state = "WAITING";
         this.container = new PIXI.Container();
 
@@ -11,7 +12,7 @@ class SlotMachine {
         this.arm.sprite.position.set(660, 200)
         this.container.addChild(this.arm.sprite);
 
-        this.sprite = PIXI.Sprite.from(assets.slotmachine);
+        this.sprite = PIXI.Sprite.from(this.assets.slotmachine);
         this.container.addChild(this.sprite);
 
         this.slots = [new Slot(this), new Slot(this), new Slot(this)]
@@ -20,7 +21,7 @@ class SlotMachine {
         this.slots[2].setPosition(484, 340);
         this.container.addChild(this.slots[0].frame, this.slots[1].frame, this.slots[2].frame);
 
-        this.winningLable = PIXI.Sprite.from(assets.bigwin)
+        this.winningLable = PIXI.Sprite.from(this.assets.bigwin)
         this.winningLable.alpha = 0;
         this.winningLable.position.set(245, 140);
         this.setWinningLableAnimation();
@@ -35,6 +36,9 @@ class SlotMachine {
 
     startSpin = (startTime) => {
         if (this.state !== "WAITING") return;
+        if (this.game.currentMoney < this.game.costToSpin) return;
+        this.game.currentMoney -= this.game.costToSpin;
+        this.game.UIManager.showExtraMoneyAnimation(-1 * this.game.costToSpin);
         this.state = "SPINNING"
         this.arm.playForwardAnimation();
         this.slots[0].startSpin(startTime, 3);
@@ -46,6 +50,8 @@ class SlotMachine {
         if (this.isAllWaiting()) {
             if (this.isWinningHand()) {
                 this.state = "WINANIMATON"
+                this.game.currentMoney += this.game.costToSpin * this.game.winMoneyRatio;
+                this.game.UIManager.showExtraMoneyAnimation(this.game.costToSpin * this.game.winMoneyRatio)
                 this.winningLable.timeline.play(0);
             }
             else {

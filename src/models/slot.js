@@ -98,7 +98,7 @@ class Slot {
             if (time / 60 > this.startTime / 60 + this.totalSpinTime + 3) {
                 this.state = "STOPPING";
                 this.random = Math.floor(Math.random() * 5.9999) - 1;
-                this.random = 1;
+                this.random = 4; // CHEAT TO WIN
             }
         }
 
