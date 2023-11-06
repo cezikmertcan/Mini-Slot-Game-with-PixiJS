@@ -13,7 +13,8 @@ class Slot {
 
         let mask = new PIXI.Graphics();
         mask.beginFill(0xff0000);
-        mask.drawRect(0, 0, 90, 120);
+        mask.drawRect(0, 0, 95, 128);
+        mask.position.set(-3, -4)
         mask.endFill();
 
         let maskContainer = new PIXI.Container();
