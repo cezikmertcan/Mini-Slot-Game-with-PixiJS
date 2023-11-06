@@ -6,6 +6,7 @@ class Slot {
         this.maxBlur = 30;
         this.maxSpeed = 40;
         this.minSlowingSpeed = 10;
+        this.pingSoundPool = { at: 0, ob: [] }
 
         let frame = new PIXI.Graphics();
         frame.drawRect(0, 0, 90, 120);
@@ -17,9 +18,7 @@ class Slot {
 
         let maskContainer = new PIXI.Container();
         maskContainer.position.set(0, -2)
-        //////////////////////////////////////////////////////////////////
         maskContainer.mask = mask;
-        //////////////////////////////////////////////////////////////////
         maskContainer.addChild(mask)
 
         frame.addChild(maskContainer);
@@ -71,8 +70,19 @@ class Slot {
         this.maskContainer = maskContainer;
         this.fruitsContainer = fruitsContainer;
         this.blurFilter = blurFilter;
+        this.createPingSoundPool(5);
     }
 
+    createPingSoundPool = (l) => {
+
+        for (let index = 0; index < l; index++) {
+            let s = createjs.Sound.createInstance('ping');
+            s.volume = 0.1;
+            this.pingSoundPool.ob.push(s);
+        }
+
+
+    }
     update = (delta, time) => {
         if (this.state == "SPINNING") {
             if (this.speed >= this.maxSpeed)
@@ -98,7 +108,7 @@ class Slot {
             if (time / 60 > this.startTime / 60 + this.totalSpinTime + 3) {
                 this.state = "STOPPING";
                 this.random = Math.floor(Math.random() * 5.9999) - 1;
-                this.random = 4; // CHEAT TO WIN
+                // this.random = 4; // CHEAT TO WIN
             }
         }
 
@@ -107,6 +117,7 @@ class Slot {
             if (Math.abs(this.fruitsContainer.y - this.random * -120) < 2) {
                 this.fruitsContainer.y = this.random * -120
                 this.state = "WAITING"
+                this.speed = 0;
                 this.slotMachine.onSlotStop();
             }
         }
@@ -121,9 +132,17 @@ class Slot {
 
         if (this.fruitsContainer.y >= 120)
             this.fruitsContainer.position.y = -600
+        this.step += this.speed;
+        if (this.step >= 200) {
+            this.step = 0;
+            this.pingSoundPool.ob[this.pingSoundPool.at].play();
+            this.pingSoundPool.at += 1;
+            if (this.pingSoundPool.at >= this.pingSoundPool.ob.length) this.pingSoundPool.at = 0;
+        }
     }
 
     startSpin = (startTime, totalSpinTime) => {
+        this.step = 0;
         this.random = -1;
         this.state = "SPINNING";
         this.startTime = startTime;

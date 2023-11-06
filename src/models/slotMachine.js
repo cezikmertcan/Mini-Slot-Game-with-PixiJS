@@ -37,6 +37,7 @@ class SlotMachine {
     startSpin = (startTime) => {
         if (this.state !== "WAITING") return;
         if (this.game.currentMoney < this.game.costToSpin) return;
+        createjs.Sound.createInstance('lever').play();
         this.game.currentMoney -= this.game.costToSpin;
         this.game.UIManager.showExtraMoneyAnimation(-1 * this.game.costToSpin);
         this.state = "SPINNING"
@@ -56,6 +57,7 @@ class SlotMachine {
             }
             else {
                 this.arm.playBackwardAnimation();
+                createjs.Sound.createInstance('lever').play();
                 this.state = "WAITING"
             }
         }
@@ -105,6 +107,7 @@ class SlotMachine {
                 alpha: 0,
                 onComplete: () => {
                     this.arm.playBackwardAnimation();
+                    createjs.Sound.createInstance('a').play();
                     this.state = "WAITING"
                 },
             })

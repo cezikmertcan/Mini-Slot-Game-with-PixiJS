@@ -35,6 +35,10 @@ class Game {
             this.time += delta;
             this.slotMachine.update(delta, this.time)
         });
+        let bgAudio = createjs.Sound.createInstance('bg');
+        bgAudio.loop = -1;
+        bgAudio.volume = 0.1;
+        bgAudio.play();
     }
 }
 
